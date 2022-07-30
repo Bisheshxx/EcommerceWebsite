@@ -11,8 +11,9 @@ exports.registerUser = catchAsyncError(async (req, res, next) => {
     password,
     avatar: { public_id: "this is default", url: "Sample" },
   });
+  const token = user.getJWTtoken();
   res.status(201).json({
     success: true,
-    user,
+    token,
   });
 });

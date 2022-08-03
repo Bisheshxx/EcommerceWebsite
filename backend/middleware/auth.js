@@ -14,3 +14,17 @@ exports.isUserAuthenticated = catchAsyncErrors(async (req, res, next) => {
   req.User = await User.findById(decodeData.id);
   next();
 });
+
+exports.authorizeRoles = (...roles) => {
+  return (req, res, next) => {
+    if (!roles.includes(req.User.role)) {
+      return next(
+        new ErrorHandler(
+          `Role:${req.User.role} is not allowed to access this source`,
+          403
+        )
+      );
+    }
+    next();
+  };
+};

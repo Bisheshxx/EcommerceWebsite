@@ -11,10 +11,10 @@ const router = express.Router();
 
 router.route("/products").get(getAllProducts);
 router
-  .route("/products/new")
+  .route("/admin/products/new")
   .post(isUserAuthenticated, authorizeRoles("Admin"), createProduct);
 router
-  .route("/products/:id")
+  .route("/admin/products/:id")
   .patch(isUserAuthenticated, authorizeRoles("Admin"), updateProduct)
   .delete(isUserAuthenticated, authorizeRoles("Admin"), deleteProduct);
 router.route("/product/:id").get(getSingleProduct);

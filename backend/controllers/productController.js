@@ -5,12 +5,12 @@ const ApiFeatures = require("../utils/apifeatures");
 
 //Create Product--admin
 exports.createProduct = catchAsyncError(async (req, res, next) => {
+  console.log(req.body.User);
   req.body.user = req.User.id; //adding id of admin user who added the product
   const product = await Product.create(req.body);
   res.status(200).json({
     success: true,
     product,
-    c,
   });
 });
 //Get All Products-Admin
@@ -81,6 +81,7 @@ exports.createProductReview = catchAsyncError(async (req, res, next) => {
     comment,
   };
   const product = await Product.findById(productId);
+  console.log(product);
   const isReviewed = product.reviews.find(
     (rev) => rev.user.toString() === req.User._id.toString()
   );
@@ -98,11 +99,57 @@ exports.createProductReview = catchAsyncError(async (req, res, next) => {
   product.reviews.forEach((rev) => {
     ratingSum += rev.rating;
   });
-  console.log("aa", ratingSum);
   product.ratings = ratingSum / product.reviews.length;
   await product.save({ validateBeforeSave: false });
   res.status(200).json({
     success: true,
     message: "Your review has been saved!",
+  });
+});
+//get all product reviews
+exports.getAllProductReviews = catchAsyncError(async (req, res, next) => {
+  console.log();
+  const product = await Product.findById(req.query.id);
+  if (!product) {
+    return next(new ErrorHandler("Product Not Found!", 404));
+  }
+  res.status(200).json({
+    success: true,
+    reviews: product.reviews,
+  });
+});
+
+//delete reviews from product
+exports.deleteReview = catchAsyncError(async (req, res, next) => {
+  const product = await Product.findById(req.query.productId);
+  if (!product) {
+    return next(new ErrorHandler("Product not found", 404));
+  }
+  const review = product.reviews.map(
+    (review) => review._id.toString() !== req.query.id
+  );
+  let ratingSum = 0;
+  review.forEach((rev) => {
+    ratingSum += rev.rating;
+  });
+  const rating = ratingSum / review.length;
+  const numOfReviews = review.length;
+  await Product.findByIdAndUpdate(
+    req.query.productId,
+    {
+      review,
+      rating,
+      numOfReviews,
+    },
+    {
+      new: true,
+      runValidators: true,
+      useFindAndModify: false,
+    }
+  );
+
+  res.status(200).json({
+    success: true,
+    message: "Product has been deleted!",
   });
 });

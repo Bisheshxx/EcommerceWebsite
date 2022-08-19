@@ -5,8 +5,8 @@
   "main": "backend/server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node backend/serve.js",
-    "dev": "nodemon backend/serve.js"
+    "start": "node backend/server.js",
+    "dev": "nodemon backend/server.js"
   },
   "author": "Bishesh Tuladhar",
   "license": "ISC",

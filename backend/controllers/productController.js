@@ -5,7 +5,6 @@ const ApiFeatures = require("../utils/apifeatures");
 
 //Create Product--admin
 exports.createProduct = catchAsyncError(async (req, res, next) => {
-  console.log(req.body.User);
   req.body.user = req.User.id; //adding id of admin user who added the product
   const product = await Product.create(req.body);
   res.status(200).json({
@@ -107,7 +106,6 @@ exports.createProductReview = catchAsyncError(async (req, res, next) => {
 });
 //get all product reviews
 exports.getAllProductReviews = catchAsyncError(async (req, res, next) => {
-  console.log();
   const product = await Product.findById(req.query.id);
   if (!product) {
     return next(new ErrorHandler("Product Not Found!", 404));

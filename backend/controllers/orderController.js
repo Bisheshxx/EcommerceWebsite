@@ -7,7 +7,7 @@ const catchAsyncError = require("../middleware/catchAsyncErrors");
 module.exports.createOrder = catchAsyncError(async (req, res, next) => {
   const {
     shippingInfo,
-    orderItems,
+    orderItem,
     paymentInfo,
     itemPrice,
     taxPrice,
@@ -16,7 +16,7 @@ module.exports.createOrder = catchAsyncError(async (req, res, next) => {
   } = req.body;
   const order = await Order.create({
     shippingInfo,
-    orderItems,
+    orderItem,
     paymentInfo,
     itemPrice,
     taxPrice,
@@ -75,13 +75,16 @@ exports.getAllOrders = catchAsyncError(async (req, res, next) => {
 
 //updating orders
 exports.updateOrder = catchAsyncError(async (req, res, next) => {
-  const order = await Order.find(req.params.id);
-  if (order.orderStatus === "delivered") {
+  const order = await Order.findById(req.params.id);
+  if (!order) {
+    return next(new ErrorHandler("Order not found", 400));
+  }
+  if (order.orderStatus === "Delivered") {
     return next(
       new ErrorHandler("Your order has already been delivered!", 400)
     );
   }
-  order.orderItems.forEach(async (order) => {
+  order.orderItem.forEach(async (order) => {
     await updateStock(order.product, order.quantity);
   });
   order.orderStatus = req.body.status;
@@ -96,7 +99,7 @@ exports.updateOrder = catchAsyncError(async (req, res, next) => {
 
 const updateStock = async (id, quantity) => {
   const product = await Product.findById(id);
-  product.stock = -quantity;
+  product.Stock = -quantity;
   product.save({ validateBeforeSave: false });
 };
 

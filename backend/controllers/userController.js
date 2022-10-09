@@ -28,7 +28,6 @@ exports.loginUser = catchAsyncError(async (req, res, next) => {
     next(new ErrorHandler("The User Does not Exist! Please Check email."));
   }
   const isPasswordMatched = await user.comparePassword(password);
-  console.log(isPasswordMatched);
   if (!isPasswordMatched) {
     next(new ErrorHandler("The User Does not Exist! Please Check email."));
   }
@@ -116,7 +115,6 @@ exports.getUserDetails = catchAsyncError(async (req, res, next) => {
 //update user profile
 exports.updatePassword = catchAsyncError(async (req, res, next) => {
   const user = await User.findById(req.User.id).select("+password");
-  console.log(req.User.id);
   const isPasswordMatched = await user.comparePassword(req.body.oldPassword);
   if (!isPasswordMatched) {
     return next(new ErrorHandler("Old password is incorrect!", 400));
